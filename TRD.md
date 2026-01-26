@@ -1,6 +1,13 @@
 # Technical Requirements Document (TRD)
 ## Phần Mềm Quản Lý Nhà Trọ - RentManager
 
+| Thông tin | Chi tiết |
+|-----------|----------|
+| **Version** | 1.1 |
+| **Ngày cập nhật** | 2026-01-25 |
+| **Tác giả** | Engineering Team |
+| **Trạng thái** | Draft - Pending Review |
+
 ---
 
 ## 1. Tổng Quan Kiến Trúc
@@ -10,12 +17,14 @@
 | Layer | Technology | Lý do chọn |
 |-------|------------|------------|
 | **Frontend** | Next.js 14 (App Router) | SSR tốt, deploy Vercel dễ dàng |
-| **Styling** | Tailwind CSS + shadcn/ui | UI đẹp, responsive, dễ customize |
+| **Styling** | Tailwind CSS v3.4+ + shadcn/ui | UI đẹp, responsive, dễ customize |
+| **Animations** | Framer Motion | Smooth transitions, micro-interactions |
 | **Backend** | Next.js API Routes | Serverless, tích hợp sẵn với Vercel |
 | **Database** | Supabase (PostgreSQL) | Realtime, Auth sẵn, free tier tốt |
 | **Storage** | Supabase Storage | Lưu ảnh bill, CCCD |
 | **Hosting** | Vercel | Free, auto deploy, edge network |
 | **Auth** | Supabase Auth | Email/Password, có thể thêm Google |
+| **PWA** | next-pwa | Offline support, installable |
 
 ### 1.2 Kiến Trúc Tổng Quan
 
@@ -181,10 +190,62 @@ CREATE POLICY "Users can view own rooms" ON rooms
         property_id IN (SELECT id FROM properties WHERE user_id = auth.uid())
     );
 
--- Tương tự cho các bảng khác...
+CREATE POLICY "Users can view own tenants" ON tenants
+    FOR ALL USING (
+        room_id IN (
+            SELECT r.id FROM rooms r
+            JOIN properties p ON r.property_id = p.id
+            WHERE p.user_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "Users can view own price_settings" ON price_settings
+    FOR ALL USING (
+        property_id IN (SELECT id FROM properties WHERE user_id = auth.uid())
+    );
+
+CREATE POLICY "Users can view own utility_readings" ON utility_readings
+    FOR ALL USING (
+        room_id IN (
+            SELECT r.id FROM rooms r
+            JOIN properties p ON r.property_id = p.id
+            WHERE p.user_id = auth.uid()
+        )
+    );
+
+CREATE POLICY "Users can view own bills" ON bills
+    FOR ALL USING (
+        room_id IN (
+            SELECT r.id FROM rooms r
+            JOIN properties p ON r.property_id = p.id
+            WHERE p.user_id = auth.uid()
+        )
+    );
 ```
 
-### 2.3 Entity Relationship Diagram
+### 2.3 Database Indexes
+
+```sql
+-- Performance indexes
+CREATE INDEX idx_rooms_property_id ON rooms(property_id);
+CREATE INDEX idx_rooms_status ON rooms(status);
+
+CREATE INDEX idx_tenants_room_id ON tenants(room_id);
+CREATE INDEX idx_tenants_is_active ON tenants(is_active);
+
+CREATE INDEX idx_utility_readings_room_month_year 
+    ON utility_readings(room_id, month, year);
+
+CREATE INDEX idx_bills_room_month_year 
+    ON bills(room_id, month, year);
+CREATE INDEX idx_bills_status ON bills(status);
+CREATE INDEX idx_bills_tenant_id ON bills(tenant_id);
+
+CREATE INDEX idx_price_settings_property_effective 
+    ON price_settings(property_id, effective_from DESC);
+```
+
+### 2.4 Entity Relationship Diagram
 
 ```mermaid
 erDiagram
@@ -310,6 +371,50 @@ rent-manager/
 | GET | `/api/bills/[id]` | Chi tiết bill |
 | GET | `/api/bills/export-all?month=1&year=2026` | Xuất ZIP tất cả bills |
 
+### 4.4 Error Response Format
+
+```typescript
+// lib/types/api.ts
+interface ApiError {
+  error: {
+    code: string;          // 'VALIDATION_ERROR', 'NOT_FOUND', 'UNAUTHORIZED'
+    message: string;       // User-friendly message
+    details?: Record<string, string[]>;  // Field-level errors
+  };
+}
+
+// HTTP Status Codes
+// 200 - Success
+// 201 - Created
+// 400 - Bad Request (validation errors)
+// 401 - Unauthorized
+// 403 - Forbidden
+// 404 - Not Found
+// 500 - Internal Server Error
+```
+
+### 4.5 Validation (Zod Schema)
+
+```typescript
+// lib/validations/room.ts
+import { z } from 'zod';
+
+export const createRoomSchema = z.object({
+  name: z.string().min(1, 'Tên phòng không được trống').max(100),
+  floor: z.number().int().min(1).default(1),
+  area: z.number().positive().optional(),
+  base_rent: z.number().positive('Giá thuê phải lớn hơn 0'),
+});
+
+export const utilityReadingSchema = z.object({
+  electricity_end: z.number().min(0),
+  water_end: z.number().min(0),
+}).refine(
+  (data) => data.electricity_end >= 0,
+  { message: 'Số điện cuối kỳ không hợp lệ' }
+);
+```
+
 ---
 
 ## 5. Tính Năng Xuất Bill
@@ -376,6 +481,9 @@ sequenceDiagram
 | PDF Generation | `@react-pdf/renderer` | Tạo PDF (optional) |
 | ZIP Files | `jszip` | Nén nhiều file bill |
 | File Download | `file-saver` | Trigger download browser |
+
+> [!NOTE]
+> Trên mobile, `html2canvas` có thể chậm. Cân nhắc server-side rendering với Puppeteer cho production nếu cần.
 
 ---
 
@@ -476,7 +584,61 @@ graph LR
 
 ---
 
-## 10. Development Timeline
+## 10. Testing Strategy
+
+### 10.1 Unit Tests (Vitest)
+
+```typescript
+// __tests__/utils/formatters.test.ts
+import { formatCurrency, formatDate } from '@/lib/utils/formatters';
+
+describe('formatCurrency', () => {
+  it('formats VND correctly', () => {
+    expect(formatCurrency(3000000)).toBe('3.000.000 đ');
+  });
+});
+```
+
+### 10.2 Integration Tests
+
+| Test Case | Description |
+|-----------|-------------|
+| Room CRUD | Tạo, sửa, xóa phòng |
+| Utility Input | Nhập số điện nước, validate |
+| Bill Generation | Tạo bill tự động, kiểm tra tính toán |
+| Export | Xuất ZIP, kiểm tra file |
+
+### 10.3 E2E Tests (Playwright)
+
+```typescript
+// e2e/bill-flow.spec.ts
+import { test, expect } from '@playwright/test';
+
+test('complete bill generation flow', async ({ page }) => {
+  await page.goto('/login');
+  await page.fill('[name=email]', 'test@example.com');
+  await page.fill('[name=password]', 'password');
+  await page.click('button[type=submit]');
+  
+  await expect(page).toHaveURL('/dashboard');
+  
+  // Navigate to utilities
+  await page.click('text=Điện Nước');
+  // ... more test steps
+});
+```
+
+### 10.4 Test Coverage Goals
+
+| Type | Coverage Target |
+|------|----------------|
+| Unit Tests | ≥ 70% |
+| Integration | Critical paths |
+| E2E | Happy paths + Edge cases |
+
+---
+
+## 11. Development Timeline
 
 | Phase | Duration | Deliverables |
 |-------|----------|--------------|
@@ -484,8 +646,242 @@ graph LR
 | **Core Features** | 3-4 ngày | Rooms, Tenants, Utilities CRUD |
 | **Bill Generation** | 2 ngày | Bill template, Generate, Preview |
 | **Export Feature** | 1 ngày | Export 1 click, ZIP download |
+| **Responsive/PWA** | 1-2 ngày | Mobile layout, PWA setup |
 | **Polish** | 1-2 ngày | UI/UX polish, Testing |
 | **Deploy** | 0.5 ngày | Vercel deploy, Domain setup |
 
 > [!TIP]
-> **Tổng thời gian ước tính MVP**: 8-10 ngày phát triển
+> **Tổng thời gian ước tính MVP**: 10-12 ngày phát triển
+
+---
+
+## 12. Responsive & Mobile Web Strategy
+
+### 11.1 Breakpoints (Tailwind Default + Custom)
+
+| Breakpoint | Size | Device Target | Layout |
+|------------|------|---------------|--------|
+| `xs` | <640px | Phones | Single column, bottom nav |
+| `sm` | ≥640px | Large phones | Single column, bottom nav |
+| `md` | ≥768px | Tablets | 2 columns, collapsible sidebar |
+| `lg` | ≥1024px | Laptops | Fixed sidebar, 3 columns |
+| `xl` | ≥1280px | Desktops | Wide sidebar, multi-panel |
+
+### 11.2 Mobile-First UI Patterns
+
+```
+┌─────────────────────────────────────┐
+│  📱 MOBILE LAYOUT (<768px)          │
+├─────────────────────────────────────┤
+│  ┌─────────────────────────────┐    │
+│  │     Header (sticky)         │    │
+│  │   🏠 RentManager   [👤]     │    │
+│  └─────────────────────────────┘    │
+│                                     │
+│  ┌─────────────────────────────┐    │
+│  │                             │    │
+│  │      Main Content           │    │
+│  │   (Full-width cards)        │    │
+│  │      Scrollable             │    │
+│  │                             │    │
+│  └─────────────────────────────┘    │
+│                                     │
+│  ┌─────────────────────────────┐    │
+│  │ [🏠] [👤] [⚡] [📄] [⚙️]    │    │
+│  │     Bottom Navigation       │    │
+│  └─────────────────────────────┘    │
+│                 ⊕ FAB               │
+└─────────────────────────────────────┘
+```
+
+### 11.3 Component Patterns theo Platform
+
+| Component | Desktop | Mobile |
+|-----------|---------|--------|
+| **Navigation** | Sidebar cố định | Bottom navigation bar |
+| **Forms** | Modal centered | Full-screen sheet từ dưới lên |
+| **Tables** | Full table với columns | Cards hoặc horizontal scroll |
+| **Actions** | Buttons trong header | FAB (Floating Action Button) |
+| **Filters** | Inline filters | Bottom sheet với filters |
+| **Delete/Edit** | Dropdown menu | Swipe to reveal actions |
+
+### 11.4 Touch & Gesture Support
+
+| Gesture | Action | Component |
+|---------|--------|----------|
+| **Swipe Left** | Reveal delete/edit buttons | List items |
+| **Swipe Down** | Pull to refresh | All lists |
+| **Long Press** | Select multiple items | Room/Bill cards |
+| **Pinch** | Zoom bill preview | Bill preview |
+
+---
+
+## 13. PWA Configuration
+
+### 12.1 next-pwa Setup
+
+```javascript
+// next.config.js
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  register: true,
+  skipWaiting: true,
+});
+
+module.exports = withPWA({
+  // Next.js config
+});
+```
+
+### 12.2 Web App Manifest
+
+```json
+// public/manifest.json
+{
+  "name": "RentManager - Quản Lý Nhà Trọ",
+  "short_name": "RentManager",
+  "description": "Phần mềm quản lý nhà trọ, xuất bill tự động",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
+```
+
+### 12.3 iOS Safari Meta Tags
+
+```html
+<!-- app/layout.tsx -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="RentManager" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+```
+
+---
+
+## 14. UI Component & Design System
+
+### 13.1 Color Palette
+
+```css
+/* globals.css - CSS Variables */
+:root {
+  /* Primary - Blue gradient */
+  --primary: 221.2 83.2% 53.3%;
+  --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  
+  /* Semantic colors */
+  --success: 142.1 76.2% 36.3%;
+  --warning: 38 92% 50%;
+  --destructive: 0 84.2% 60.2%;
+  
+  /* Backgrounds */
+  --background: 0 0% 100%;
+  --card: 0 0% 100%;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --card: 222.2 84% 6%;
+}
+```
+
+### 13.2 Typography Scale
+
+| Element | Size | Weight | Usage |
+|---------|------|--------|-------|
+| **h1** | 2.25rem | 700 | Page titles |
+| **h2** | 1.5rem | 600 | Section headers |
+| **h3** | 1.25rem | 600 | Card titles |
+| **body** | 1rem | 400 | Default text |
+| **small** | 0.875rem | 400 | Secondary text |
+
+### 13.3 Spacing System (8px base)
+
+- `space-1`: 4px
+- `space-2`: 8px  
+- `space-3`: 12px
+- `space-4`: 16px
+- `space-6`: 24px
+- `space-8`: 32px
+
+### 13.4 shadcn/ui Components cần customize
+
+| Component | Customization |
+|-----------|---------------|
+| `Button` | Gradient variant, larger touch target |
+| `Card` | Subtle shadow, hover lift effect |
+| `Input` | Larger font size on mobile (16px để tránh zoom) |
+| `Sheet` | Full-height trên mobile |
+| `Skeleton` | Shimmer animation |
+| `Toast` | Bottom position trên mobile |
+
+### 13.5 Animation Guidelines (Framer Motion)
+
+```typescript
+// lib/animations.ts
+export const pageTransition = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+  transition: { duration: 0.3 }
+};
+
+export const cardHover = {
+  whileHover: { scale: 1.02, y: -4 },
+  transition: { type: "spring", stiffness: 300 }
+};
+
+export const staggerChildren = {
+  animate: { transition: { staggerChildren: 0.1 } }
+};
+```
+
+---
+
+## 15. Project Structure (Final)
+
+```
+rent-manager/
+├── app/
+│   ├── (auth)/
+│   ├── (dashboard)/
+│   │   ├── layout.tsx              # Responsive layout switcher
+│   │   └── ...
+│   ├── manifest.ts                 # PWA manifest
+│   └── globals.css                 # Design tokens
+├── components/
+│   ├── ui/                         # shadcn + custom
+│   ├── layout/
+│   │   ├── Sidebar.tsx             # Desktop navigation
+│   │   ├── BottomNav.tsx           # Mobile navigation ⭐
+│   │   ├── MobileHeader.tsx        # Mobile header ⭐
+│   │   └── ResponsiveLayout.tsx    # Layout switcher ⭐
+│   ├── mobile/                     # Mobile-specific ⭐
+│   │   ├── BottomSheet.tsx
+│   │   ├── SwipeableCard.tsx
+│   │   └── FAB.tsx
+│   └── ...
+├── hooks/
+│   ├── useMediaQuery.ts            # Responsive hook ⭐
+│   ├── useSwipeGesture.ts          # Gesture hook ⭐
+│   └── ...
+├── lib/
+│   ├── animations.ts               # Framer Motion presets ⭐
+│   └── ...
+├── public/
+│   ├── icons/                      # PWA icons ⭐
+│   ├── manifest.json               # PWA manifest ⭐
+│   └── sw.js                       # Service worker (auto-generated)
+└── ...
+```
+
+> [!IMPORTANT]
+> Các file đánh dấu ⭐ là bổ sung mới cho responsive/mobile support

@@ -1,6 +1,13 @@
 # Product Requirements Document (PRD)
 ## Phần Mềm Quản Lý Nhà Trọ - RentManager
 
+| Thông tin | Chi tiết |
+|-----------|----------|
+| **Version** | 1.1 |
+| **Ngày cập nhật** | 2026-01-25 |
+| **Tác giả** | Product Team |
+| **Trạng thái** | Draft - Pending Review |
+
 ---
 
 ## 1. Tổng Quan Sản Phẩm
@@ -112,38 +119,94 @@ Xây dựng phần mềm quản lý nhà trọ giúp chủ trọ dễ dàng theo
 
 ## 5. Wireframe Cơ Bản
 
+### 5.1 Desktop Layout (≥1024px)
 ```
-┌─────────────────────────────────────────────────────────┐
-│  🏠 RentManager                    [Cấu hình] [Thoát]   │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  [📋 Phòng Trọ] [👤 Người Thuê] [⚡ Điện Nước] [📄 Bill]│
-│                                                         │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│  ┌─────────────────────────────────────────────────┐   │
-│  │           NỘI DUNG CHÍNH                        │   │
-│  │                                                  │   │
-│  │  Danh sách phòng / Form nhập liệu / Preview...  │   │
-│  │                                                  │   │
-│  └─────────────────────────────────────────────────┘   │
-│                                                         │
-│  [💾 Lưu] [📥 Xuất Bill] [📦 Tải Tất Cả Bill]          │
-│                                                         │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│  🏠 RentManager                      [🌙 Dark] [👤 Profile] │
+├────────────┬────────────────────────────────────────────────┤
+│            │                                                │
+│  📋 Phòng  │   ┌────────────────────────────────────────┐   │
+│  👤 Người  │   │           NỘI DUNG CHÍNH               │   │
+│  ⚡ Điện   │   │                                         │   │
+│  📄 Bill   │   │  Danh sách phòng / Form / Preview...   │   │
+│  ⚙️ Cài đặt│   │                                         │   │
+│            │   └────────────────────────────────────────┘   │
+│            │                                                │
+│            │   [💾 Lưu] [📥 Xuất Bill] [📦 Tải Tất Cả]     │
+└────────────┴────────────────────────────────────────────────┘
+```
+
+### 5.2 Mobile Layout (<768px)
+```
+┌─────────────────────────┐
+│ 🏠 RentManager    [👤]  │  ← Header sticky
+├─────────────────────────┤
+│                         │
+│  ┌───────────────────┐  │
+│  │  Room Card 1      │  │
+│  │  Phòng 101 - 3tr  │  │
+│  └───────────────────┘  │
+│                         │
+│  ┌───────────────────┐  │
+│  │  Room Card 2      │  │
+│  │  Phòng 102 - 2.5tr│  │
+│  └───────────────────┘  │
+│                         │
+│         ... scroll      │
+│                         │
+├─────────────────────────┤
+│ [🏠] [👤] [⚡] [📄] [⚙️]│  ← Bottom Nav
+└─────────────────────────┘
+              ⊕ FAB (Floating Action Button)
 ```
 
 ---
 
 ## 6. Yêu Cầu Phi Chức Năng
 
+### 6.1 Hiệu Năng & Kỹ Thuật
 | Yêu cầu | Mô tả |
 |---------|-------|
-| **Hiệu năng** | Ứng dụng mở trong < 3 giây |
-| **Dữ liệu** | Lưu trữ local, không cần internet |
-| **Bảo mật** | Có thể đặt mật khẩu mở ứng dụng |
+| **Hiệu năng** | Ứng dụng mở trong < 3 giây, First Contentful Paint < 1.5s |
+| **Dữ liệu** | Lưu trữ cloud (Supabase), hỗ trợ offline mode cơ bản |
+| **Bảo mật** | Xác thực email/password, Row Level Security |
 | **Khả năng mở rộng** | Hỗ trợ quản lý nhiều nhà trọ |
-| **Dễ sử dụng** | Giao diện đơn giản, trực quan |
+
+### 6.2 Responsive Design (Bắt buộc)
+| Breakpoint | Thiết bị | Yêu cầu |
+|------------|----------|----------|
+| **Mobile** | ≥375px | Touch-friendly, bottom navigation, full-width cards |
+| **Tablet** | ≥768px | 2-column layout, sidebar có thể collapse |
+| **Desktop** | ≥1024px | Sidebar cố định, multi-column dashboard |
+
+### 6.3 UI/UX Requirements (MVP phải đẹp!)
+| Yêu cầu | Chi tiết |
+|---------|----------|
+| **Design System** | Sử dụng shadcn/ui với custom theme, consistent spacing |
+| **Typography** | Font hiện đại (Inter/Plus Jakarta Sans), hierarchy rõ ràng |
+| **Color Palette** | Primary gradient, dark mode support, semantic colors |
+| **Loading States** | Skeleton UI cho mọi data fetching, không để blank screen |
+| **Micro-animations** | Hover effects, page transitions, button feedback |
+| **Touch-friendly** | Buttons ≥44x44px, adequate spacing giữa các tap targets |
+| **Empty States** | Illustrations thay vì text đơn thuần, CTA rõ ràng |
+| **Error States** | Friendly error messages, retry options |
+
+### 6.4 Progressive Web App (PWA)
+| Yêu cầu | Mô tả |
+|---------|-------|
+| **Installable** | Add to home screen trên mobile |
+| **Offline** | Hiển thị cached data khi mất mạng |
+| **App-like** | Full-screen mode, splash screen |
+| **Push Notifications** | Nhắc nhở thu tiền (Phase 2) |
+
+### 6.5 Accessibility (A11y)
+| Yêu cầu | Chi tiết |
+|---------|----------|
+| **Keyboard Navigation** | Tất cả chức năng accessible bằng bàn phím |
+| **Screen Reader** | Semantic HTML, ARIA labels cho buttons/forms |
+| **Color Contrast** | WCAG AA compliant (contrast ratio ≥ 4.5:1) |
+| **Focus Indicators** | Visible focus ring cho tất cả interactive elements |
+| **Font Sizing** | Hỗ trợ zoom 200% không break layout |
 
 ---
 
