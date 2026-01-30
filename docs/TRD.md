@@ -61,6 +61,17 @@ graph TB
 ### 2.1 Supabase Tables
 
 ```sql
+-- Bảng profiles (Thông tin mở rộng của user)
+CREATE TABLE profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    full_name VARCHAR(255),
+    avatar_url TEXT,
+    phone_number VARCHAR(20),
+    role VARCHAR(20) DEFAULT 'landlord', -- 'landlord', 'staff'
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Bảng nhà trọ (1 user có thể quản lý nhiều nhà)
 CREATE TABLE properties (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

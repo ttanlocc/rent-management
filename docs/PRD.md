@@ -31,6 +31,11 @@ Xây dựng phần mềm quản lý nhà trọ giúp chủ trọ dễ dàng theo
 
 ## 2. Tính Năng Chính
 
+### 2.0 Authentication & User Management
+- [ ] **Đăng ký / Đăng nhập**: Email/Password qua Supabase Auth.
+- [ ] **Quản lý Hồ sơ**: Cập nhật Avatar, Họ tên, Số điện thoại.
+- [ ] **Phân quyền**: Role cơ bản (Chủ trọ) và mở rộng sau này (Nhân viên).
+
 ### 2.1 Quản Lý Phòng Trọ
 - [ ] Thêm/Sửa/Xóa phòng trọ
 - [ ] Cấu hình thông tin phòng (tên phòng, diện tích, giá thuê)
