@@ -156,11 +156,11 @@ export function withErrorHandler<T>(
 
 // Common error responses (pre-built for convenience)
 export const errors = {
-    unauthorized: () =>
-        createErrorResponse('UNAUTHORIZED', 'Vui lòng đăng nhập để tiếp tục'),
+    unauthorized: (message = 'Vui lòng đăng nhập để tiếp tục') =>
+        createErrorResponse('UNAUTHORIZED', message),
 
-    forbidden: () =>
-        createErrorResponse('FORBIDDEN', 'Bạn không có quyền thực hiện thao tác này'),
+    forbidden: (message = 'Bạn không có quyền thực hiện thao tác này') =>
+        createErrorResponse('FORBIDDEN', message),
 
     notFound: (resource = 'Dữ liệu') =>
         createErrorResponse('NOT_FOUND', `${resource} không tồn tại`),
