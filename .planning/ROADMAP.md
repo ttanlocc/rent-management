@@ -50,10 +50,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Landlord can view complete payment history for any tenant with filtering
   4. Landlord can edit or delete payment records with confirmation
   5. System visually highlights overdue payments with red indicators/badges
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] TBD (determined during /gsd:plan-phase 4)
+- [ ] 04-01-PLAN.md — Data foundation: migration, types, validations, storage utility
+- [ ] 04-02-PLAN.md — API routes and TanStack Query hooks for payment CRUD
+- [ ] 04-03-PLAN.md — UI components, payments page, and navigation updates
 
 ### Phase 5: Lease & Schedule Management
 **Goal**: Lease terms automatically generate expected payment schedules, eliminating manual monthly entry
@@ -109,7 +111,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 1. Authentication | - | Complete | (shipped in initial codebase) |
 | 2. Room Management | - | Complete | (shipped in initial codebase) |
 | 3. Tenant Management | - | Complete | (shipped in initial codebase) |
-| 4. Payment Tracking | 0/TBD | Not started | - |
+| 4. Payment Tracking | 0/3 | Planned | - |
 | 5. Lease & Schedule Management | 0/TBD | Not started | - |
 | 6. Expense Tracking | 0/TBD | Not started | - |
 | 7. Financial Reporting & Dashboard | 0/TBD | Not started | - |
