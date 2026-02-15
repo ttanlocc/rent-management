@@ -105,41 +105,41 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PAY-01 | TBD | Pending |
-| PAY-02 | TBD | Pending |
-| PAY-03 | TBD | Pending |
-| PAY-04 | TBD | Pending |
-| PAY-05 | TBD | Pending |
-| PAY-06 | TBD | Pending |
-| PAY-07 | TBD | Pending |
-| PAY-08 | TBD | Pending |
-| LEASE-01 | TBD | Pending |
-| LEASE-02 | TBD | Pending |
-| LEASE-03 | TBD | Pending |
-| LEASE-04 | TBD | Pending |
-| LEASE-05 | TBD | Pending |
-| LEASE-06 | TBD | Pending |
-| LEASE-07 | TBD | Pending |
-| FIN-01 | TBD | Pending |
-| FIN-02 | TBD | Pending |
-| FIN-03 | TBD | Pending |
-| FIN-04 | TBD | Pending |
-| FIN-05 | TBD | Pending |
-| FIN-06 | TBD | Pending |
-| FIN-07 | TBD | Pending |
-| FIN-08 | TBD | Pending |
-| FIN-09 | TBD | Pending |
-| EXP-01 | TBD | Pending |
-| EXP-02 | TBD | Pending |
-| EXP-03 | TBD | Pending |
-| EXP-04 | TBD | Pending |
-| EXP-05 | TBD | Pending |
+| PAY-01 | Phase 4 | Pending |
+| PAY-02 | Phase 4 | Pending |
+| PAY-03 | Phase 4 | Pending |
+| PAY-04 | Phase 4 | Pending |
+| PAY-05 | Phase 4 | Pending |
+| PAY-06 | Phase 4 | Pending |
+| PAY-07 | Phase 4 | Pending |
+| PAY-08 | Phase 4 | Pending |
+| LEASE-01 | Phase 5 | Pending |
+| LEASE-02 | Phase 5 | Pending |
+| LEASE-03 | Phase 5 | Pending |
+| LEASE-04 | Phase 5 | Pending |
+| LEASE-05 | Phase 5 | Pending |
+| LEASE-06 | Phase 5 | Pending |
+| LEASE-07 | Phase 5 | Pending |
+| FIN-01 | Phase 7 | Pending |
+| FIN-02 | Phase 7 | Pending |
+| FIN-03 | Phase 7 | Pending |
+| FIN-04 | Phase 7 | Pending |
+| FIN-05 | Phase 7 | Pending |
+| FIN-06 | Phase 7 | Pending |
+| FIN-07 | Phase 7 | Pending |
+| FIN-08 | Phase 7 | Pending |
+| FIN-09 | Phase 7 | Pending |
+| EXP-01 | Phase 6 | Pending |
+| EXP-02 | Phase 6 | Pending |
+| EXP-03 | Phase 6 | Pending |
+| EXP-04 | Phase 6 | Pending |
+| EXP-05 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 30 total
-- Mapped to phases: 0 (awaiting roadmap)
-- Unmapped: 30 ⚠️
+- v1 requirements: 29 total
+- Mapped to phases: 29 (100% coverage)
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-15*
-*Last updated: 2026-02-15 after initial definition*
+*Last updated: 2026-02-15 after roadmap creation*
