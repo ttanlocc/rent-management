@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Authentication** - User accounts with email/password auth
 - [x] **Phase 2: Room Management** - CRUD for rooms with status tracking
 - [x] **Phase 3: Tenant Management** - CRUD for tenants with room assignments
-- [ ] **Phase 4: Payment Tracking** - Manual payment entry with receipt uploads and history
+- [x] **Phase 4: Payment Tracking** - Manual payment entry with receipt uploads and history
 - [ ] **Phase 5: Lease & Schedule Management** - Lease terms with auto-generated payment schedules
 - [ ] **Phase 6: Expense Tracking** - Record and categorize property expenses
 - [ ] **Phase 7: Financial Reporting** - Dashboard widgets with trends and CSV export
@@ -40,9 +40,11 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Status**: Complete
 **Requirements**: Shipped in initial codebase
 
-### Phase 4: Payment Tracking
+### Phase 4: Payment Tracking (COMPLETE)
 **Goal**: Landlords can manually record and track all tenant payments with receipt evidence
 **Depends on**: Phase 3 (tenants must exist to receive payments)
+**Status**: Complete
+**Completed**: 2026-02-25
 **Requirements**: PAY-01, PAY-02, PAY-03, PAY-04, PAY-05, PAY-06, PAY-07, PAY-08
 **Success Criteria** (what must be TRUE):
   1. Landlord can create payment record with date, amount, payment method, and link to tenant
@@ -53,9 +55,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 3 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Data foundation: migration, types, validations, storage utility
-- [ ] 04-02-PLAN.md — API routes and TanStack Query hooks for payment CRUD
-- [ ] 04-03-PLAN.md — UI components, payments page, and navigation updates
+- [x] 04-01-PLAN.md — Data foundation: migration, types, validations, storage utility
+- [x] 04-02-PLAN.md — API routes and TanStack Query hooks for payment CRUD
+- [x] 04-03-PLAN.md — UI components, payments page, and navigation updates
 
 ### Phase 5: Lease & Schedule Management
 **Goal**: Lease terms automatically generate expected payment schedules, eliminating manual monthly entry
@@ -111,11 +113,11 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 1. Authentication | - | Complete | (shipped in initial codebase) |
 | 2. Room Management | - | Complete | (shipped in initial codebase) |
 | 3. Tenant Management | - | Complete | (shipped in initial codebase) |
-| 4. Payment Tracking | 0/3 | Planned | - |
+| 4. Payment Tracking | 3/3 | Complete | 2026-02-25 |
 | 5. Lease & Schedule Management | 0/TBD | Not started | - |
 | 6. Expense Tracking | 0/TBD | Not started | - |
 | 7. Financial Reporting & Dashboard | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-02-15*
-*Last updated: 2026-02-15*
+*Last updated: 2026-02-25 (Phase 4 complete)*
