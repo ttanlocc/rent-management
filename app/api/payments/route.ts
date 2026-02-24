@@ -161,7 +161,7 @@ export async function POST(request: NextRequest) {
                 receiptUrl = await uploadReceipt(receiptFile, tempId)
             } catch (uploadError) {
                 console.error('Receipt upload error:', uploadError)
-                return errors.internal('Không thể tải lên biên lai')
+                return errors.internal()
             }
         }
 
