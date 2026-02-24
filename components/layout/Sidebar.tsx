@@ -11,6 +11,7 @@ import {
     Settings,
     LayoutDashboard,
     ChevronLeft,
+    Banknote,
 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -18,6 +19,7 @@ const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Phòng', href: '/dashboard/rooms', icon: Building2 },
     { name: 'Người thuê', href: '/dashboard/tenants', icon: Users },
+    { name: 'Thanh toán', href: '/dashboard/payments', icon: Banknote },
     { name: 'Điện nước', href: '/dashboard/utilities', icon: Zap },
     { name: 'Hóa đơn', href: '/dashboard/bills', icon: FileText },
     { name: 'Cài đặt', href: '/dashboard/settings', icon: Settings },
