@@ -285,6 +285,47 @@ export interface Database {
                     updated_at?: string
                 }
             }
+            payments: {
+                Row: {
+                    id: string
+                    tenant_id: string
+                    payment_date: string
+                    amount: number
+                    payment_method: string // 'cash' | 'bank_transfer' | 'check'
+                    payment_status: string // 'paid_in_full' | 'partial_payment' | 'late_fee_applied'
+                    receipt_url: string | null
+                    transaction_reference: string | null
+                    notes: string | null
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    tenant_id: string
+                    payment_date: string
+                    amount: number
+                    payment_method: string
+                    payment_status: string
+                    receipt_url?: string | null
+                    transaction_reference?: string | null
+                    notes?: string | null
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    tenant_id?: string
+                    payment_date?: string
+                    amount?: number
+                    payment_method?: string
+                    payment_status?: string
+                    receipt_url?: string | null
+                    transaction_reference?: string | null
+                    notes?: string | null
+                    created_at?: string
+                    updated_at?: string
+                }
+            }
         }
         Views: {
             [_ in never]: never
@@ -306,6 +347,8 @@ export interface Database {
 export type RoomStatus = 'vacant' | 'occupied'
 export type BillStatus = 'pending' | 'paid'
 export type UserRole = 'landlord' | 'staff'
+export type PaymentMethod = 'cash' | 'bank_transfer' | 'check'
+export type PaymentStatus = 'paid_in_full' | 'partial_payment' | 'late_fee_applied'
 
 // Row types (for reading data)
 export type Profile = Database['public']['Tables']['profiles']['Row']
@@ -315,6 +358,7 @@ export type Tenant = Database['public']['Tables']['tenants']['Row']
 export type PriceSetting = Database['public']['Tables']['price_settings']['Row']
 export type UtilityReading = Database['public']['Tables']['utility_readings']['Row']
 export type Bill = Database['public']['Tables']['bills']['Row']
+export type Payment = Database['public']['Tables']['payments']['Row']
 
 // Insert types (for creating data)
 export type ProfileInsert = Database['public']['Tables']['profiles']['Insert']
@@ -324,6 +368,7 @@ export type TenantInsert = Database['public']['Tables']['tenants']['Insert']
 export type PriceSettingInsert = Database['public']['Tables']['price_settings']['Insert']
 export type UtilityReadingInsert = Database['public']['Tables']['utility_readings']['Insert']
 export type BillInsert = Database['public']['Tables']['bills']['Insert']
+export type PaymentInsert = Database['public']['Tables']['payments']['Insert']
 
 // Update types (for modifying data)
 export type ProfileUpdate = Database['public']['Tables']['profiles']['Update']
@@ -333,6 +378,7 @@ export type TenantUpdate = Database['public']['Tables']['tenants']['Update']
 export type PriceSettingUpdate = Database['public']['Tables']['price_settings']['Update']
 export type UtilityReadingUpdate = Database['public']['Tables']['utility_readings']['Update']
 export type BillUpdate = Database['public']['Tables']['bills']['Update']
+export type PaymentUpdate = Database['public']['Tables']['payments']['Update']
 
 // Extended types with relations
 export interface RoomWithTenant extends Room {
@@ -347,4 +393,13 @@ export interface RoomWithDetails extends Room {
 
 export interface PropertyWithRooms extends Property {
     rooms?: Room[]
+}
+
+export interface PaymentWithTenant extends Payment {
+    tenant?: {
+        full_name: string
+        room?: {
+            name: string
+        } | null
+    }
 }
