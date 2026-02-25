@@ -72,14 +72,30 @@ npm i -g supabase
 
 **Project Supabase trên cloud (hosted):**
 
-Đăng nhập rồi lấy api-keys (cần **Project Ref** – xem trong URL dashboard: `.../project/<project-ref>`):
+**Cách 1 – Script trong repo (chỉ cần Access Token + Project Ref):**
+
+1. Tạo **Personal Access Token**: [supabase.com/dashboard/account/tokens](https://supabase.com/dashboard/account/tokens) → Generate new token.
+2. Lấy **Project Ref**: vào [Dashboard](https://supabase.com/dashboard) → chọn project → URL dạng `.../project/<ref>`.
+3. Chạy (thay `sbp_xxx` và `your-ref`):
 
 ```bash
-supabase login
-supabase projects api-keys --project-ref <PROJECT_REF>
+# Liệt kê project để lấy ref
+SUPABASE_ACCESS_TOKEN=sbp_xxx npm run supabase:keys -- --list
+
+# Lấy keys và in ra .env
+SUPABASE_ACCESS_TOKEN=sbp_xxx PROJECT_REF=your-ref npm run supabase:keys
 ```
 
-Lệnh in ra **anon key** và **service_role key**. URL project: `https://<PROJECT_REF>.supabase.co` → dùng làm `NEXT_PUBLIC_SUPABASE_URL`.
+Copy output vào `.env` / `.env.local` hoặc vào Vercel → Project → Settings → Environment Variables.
+
+**Cách 2 – Supabase CLI:**
+
+```bash
+npx supabase login
+npx supabase projects api-keys --project-ref <PROJECT_REF>
+```
+
+Lệnh in ra **anon key** và **service_role key**. URL: `https://<PROJECT_REF>.supabase.co` → `NEXT_PUBLIC_SUPABASE_URL`.
 
 **Supabase chạy local (Docker):**
 

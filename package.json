@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "vercel:link": "vercel link",
-    "vercel:env": "vercel env pull .env.local"
+    "vercel:env": "vercel env pull .env.local",
+    "supabase:keys": "node scripts/get-supabase-keys.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
