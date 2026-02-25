@@ -1,13 +1,14 @@
+import Link from "next/link";
 import { Building2, Key, Users, Zap } from "lucide-react";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-white">
       <header className="flex h-16 items-center border-b px-8">
-        <div className="flex items-center gap-2 font-bold text-xl text-primary">
+        <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary hover:opacity-80 transition-opacity">
           <Building2 className="h-6 w-6" />
           <span>RentManager</span>
-        </div>
+        </Link>
       </header>
 
       <main className="flex-1">
@@ -20,16 +21,22 @@ export default function Home() {
             Tiết kiệm thời gian, chính xác tuyệt đối.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
-            <button className="rounded-md bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-all">
+            <Link
+              href="/login"
+              className="rounded-md bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-all inline-block"
+            >
               Bắt đầu ngay
-            </button>
-            <button className="text-sm font-semibold leading-6 text-zinc-900">
+            </Link>
+            <Link
+              href="#features"
+              className="text-sm font-semibold leading-6 text-zinc-900 hover:text-blue-600 transition-colors inline-flex items-center gap-1"
+            >
               Tìm hiểu thêm <span aria-hidden="true">→</span>
-            </button>
+            </Link>
           </div>
         </section>
 
-        <section className="border-t bg-zinc-50 py-24">
+        <section id="features" className="border-t bg-zinc-50 py-24 scroll-mt-20">
           <div className="mx-auto max-w-7xl px-8">
             <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
               <div className="flex flex-col items-center text-center">
