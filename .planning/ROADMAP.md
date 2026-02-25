@@ -69,10 +69,12 @@ Plans:
   3. Landlord can view lease terms and payment schedule in tenant detail view
   4. Landlord can edit lease terms (dates, rent amount) and schedule updates automatically
   5. System shows lease renewal status (active, expiring soon, expired)
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] TBD (determined during /gsd:plan-phase 5)
+- [ ] 05-01-PLAN.md — Data foundation: migration (leases + schedules tables), types, validation schemas
+- [ ] 05-02-PLAN.md — API routes and TanStack Query hooks for lease CRUD with schedule auto-generation
+- [ ] 05-03-PLAN.md — UI components, leases page, schedule table, and navigation updates
 
 ### Phase 6: Expense Tracking
 **Goal**: Landlords can record and categorize property expenses to track total costs
